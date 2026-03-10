@@ -2,9 +2,12 @@ FROM tomcat:10.1.24-jdk21-temurin
 
 WORKDIR /usr/local/tomcat
 
-RUN rm -rf /usr/local/tomcat/webapps/*
+RUN rm -rf webapps/*
 COPY dist/CV.war /usr/local/tomcat/webapps/ROOT.war
 
-EXPOSE 10000
+# Permissions compatibles OpenShift
+RUN chgrp -R 0 /usr/local/tomcat && chmod -R g=u /usr/local/tomcat
 
-CMD ["sh", "-c", "sed -i \"0,/port=\\\"8080\\\"/s//port=\\\"${PORT:-10000}\\\"/\" conf/server.xml && catalina.sh run"]
+EXPOSE 8080
+
+CMD ["catalina.sh", "run"]
